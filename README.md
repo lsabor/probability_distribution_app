@@ -1,6 +1,7 @@
 # probability_distribution_app
 Metaculus coding challenge (back end)
 
+Author: Luke Sabor
 
 Challenge statement:
 
