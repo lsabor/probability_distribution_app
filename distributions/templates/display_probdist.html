@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="shortcut icon" href="#">
+
+<head>
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="#">
+    <title>{{dist.name}}</title>
+    <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-core.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-cartesian.min.js"></script>
+    <style type="text/css">
+        html,
+        body,
+        #container {
+            width: 90%;
+            height: 90%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container"></div>
+    <script>
+
+
+        anychart.onDocumentReady(function () {
+
+            var name = "{{ dist.name|escapejs }}";
+            var dataSet = JSON.parse("{{ data|escapejs }}");
+
+            // create an area chart
+            var chart = anychart.area();
+
+            // create a dataset for mapping
+            var budgetData = anychart.data.set(dataSet);
+
+            // map the data
+            var seriesData = budgetData.mapAs({ x: 0, value: 1 });
+
+            // create the first series, set the data and name
+            var series1 = chart.area(seriesData);
+            // series1.name("USA");
+
+
+            // set the chart title
+            chart.title(name);
+
+            // add and configure the crosshair 
+            var crosshair = chart.crosshair();
+            crosshair.enabled(true)
+                .yStroke(null)
+                .xStroke('#fff');
+            crosshair.yLabel().enabled(false);
+
+            // configure the visual settings of the first series
+            series1.fill("#AC2132", 0.7)
+                .stroke("#AC2132", 1);
+
+
+            // add the legend
+            // chart.legend(true);
+
+            // set the titles of the axes
+            chart.xAxis().title("{{dist.xaxis_name|escapejs}}");
+            chart.yAxis().title("Density");
+
+            // set the hover mode as single
+            chart.interactivity().hoverMode("single");
+
+            // set the container id for the chart
+            chart.container("container");
+
+            // initiate drawing the chart
+            chart.draw();
+
+        });
+
+    </script>
+
+    <!-- display the values that can be changed:
+    1. name
+    2. xaxis name
+    3. upper/lower bounds
+    save changes button
+    -->
+    <form action="update/" method="POST">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value={{dist.name}}><br>
+        <label for="xaxis_name">X Axis Name:</label>
+        <input type="text" id="xaxis_name" name="xaxis_name" value={{dist.xaxis_name}}><br>
+        <label for="lower_bound">Lower Bound:</label>
+        <input type="text" id="lower_bound" name="lower_bound" value={{dist.lower_bound}}><br>
+        <label for="upper_bound">Upper Bound:</label>
+        <input type="text" id="upper_bound" name="upper_bound" value={{dist.upper_bound}}><br>
+        <input type="submit" value="Save Changes">
+    </form>
+
+    <!-- display details about each distribution that can be changed
+        show distribution type
+        1. mean
+        2. std
+        3. weight
+        save changes
+        delete button
+    -->
+    <br> Constituative Normal Distributions <br><br>
+    {% for normdist in normdists %}
+    <form action={{normdist.id}}/update/ method="POST">
+        <label for="mean">Mean:</label>
+        <input type="text" id="mean" name="mean" value={{normdist.mean}}><br>
+        <label for="std">Standard Deviation:</label>
+        <input type="text" id="std" name="std" value={{normdist.std}}><br>
+        <label for="weight">Weight:</label>
+        <input type="text" id="weight" name="weight" value={{normdist.weight}}><br>
+        <input type="submit" value="Save Changes">
+    </form>
+    <form action={{normdist.id}}/delete/ method="POST">
+        <input type="submit" value="Delete">
+    </form>
+    <br>
+    {% endfor %}
+
+    <br> Add New Normal Distributions <br><br>
+    <form action=create_normdist/ method="POST">
+        <label for="mean">Mean:</label>
+        <input type="text" id="mean" name="mean" value={{normdist.mean}}><br>
+        <label for="std">Standard Deviation:</label>
+        <input type="text" id="std" name="std" value={{normdist.std}}><br>
+        <label for="weight">Weight:</label>
+        <input type="text" id="weight" name="weight" value={{normdist.weight}}><br>
+        <input type="submit" value="Create">
+    </form>
+    <br>
+    <!-- Delete distibution option -->
+    <form action="delete/" method="POST">
+        <input type="submit" value="Delete Entire Distribution?">
+    </form>
+    <br>
+    <br>
+</body>
+
+</html>

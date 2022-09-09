@@ -1,0 +1,23 @@
+<html>
+<title>Probability Distributions</title>
+
+<head>
+    <H3>Probability Distributions</H3>
+</head>
+
+<body>
+
+    {% for probdist in probdists %}
+    {{ forloop.counter }}. <a href={{probdist.id}}>{{probdist.name}}</a><br>
+
+    {% endfor %}
+
+    <br><br>
+    <form action="create_dist/">
+        <input type="submit" value="Make a New Distribution" />
+    </form>
+
+
+</body>
+
+</html>
